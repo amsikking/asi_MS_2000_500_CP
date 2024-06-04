@@ -76,6 +76,7 @@ class Controller:
             self._set_settle_time(len(axes)*(0,))
             self._set_precision(self.min_precision_um)
             self._get_position()
+            self._get_motor_moving()
             self._moving = False
         if use_pwm:
             self.set_pwm_state('off')
@@ -291,6 +292,17 @@ class Controller:
         if self.verbose:
             print("%s: -> position (um) = %s"%(self.name, self.position_um))
         return self.position_um
+
+    def _get_motor_moving(self):
+        if self.verbose:
+            print("%s: getting motor moving"%self.name)
+        self.motor_moving = False
+        status = self._send('/')
+        if status != 'N':
+            self.motor_moving = True 
+        if self.verbose:
+            print("%s: -> motor moving = %s"%(self.name, self.motor_moving))
+        return self.motor_moving
 
     def _finish_moving(self):
         if not self._moving:
