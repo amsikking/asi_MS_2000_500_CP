@@ -77,6 +77,7 @@ class Controller:
             self._set_precision(self.min_precision_um)
             self._get_position()
             self._get_motor_moving()
+            self._set_joystick_enable(True)
             self._moving = False
         if use_pwm:
             self.set_pwm_state('off')
@@ -304,6 +305,22 @@ class Controller:
             print("%s: -> motor moving = %s"%(self.name, self.motor_moving))
         return self.motor_moving
 
+    def _set_joystick_enable(self, enable):
+        if self.verbose:
+            print("%s: setting joystick enable = %s"%(self.name, enable))
+        assert type(enable) is bool, "enable '%s' not allowed"%enable
+        if enable:
+            cmd = '+'
+            self.joystick_enabled = True
+        if not enable:
+            cmd = '-'
+            self.joystick_enabled = False
+        for axis in self.axes:
+            self._send('J ' + axis + cmd, respond=False)
+        if self.verbose:
+            print("%s: -> done setting joystick enable."%self.name)
+        return self.joystick_enabled
+
     def _finish_moving(self):
         if not self._moving:
             return None
@@ -316,6 +333,9 @@ class Controller:
             assert p >= self._target_move_um[i] - self.precision_um[i]
             assert p <= self._target_move_um[i] + self.precision_um[i]
         self._moving = False
+        if self.joystick_enabled:  # re-enable
+            for axis in self.axes:
+                self._send('J ' + axis + '+', respond=False)
         if self.verbose: print('%s: -> finished moving'%self.name)
         return None
 
@@ -338,6 +358,9 @@ class Controller:
         for i in range(len(self.axes)):
             cmd_string.append('%s=%0.6f '%(self.axes[i],
                                            self._position2counts(move_um)[i]))
+        if self.joystick_enabled:  # disable
+            for axis in self.axes:
+                self._send('J ' + axis + '-', respond=False)
         self._send(''.join(cmd_string), respond=False)
         self._moving = True
         self._target_move_um = move_um
