@@ -23,7 +23,9 @@ class Controller:
         if self.verbose: print('%s: Opening...'%name, end='')
         try:
             self.port = serial.Serial(
-                port=which_port, baudrate=9600, timeout=5)
+                # for baudrate=115200 DIP Switches 4 and 5 must be 'DOWN'
+                # (default is DIP Switches 4 and 5 'UP' and baudrate=9600)
+                port=which_port, baudrate=115200, timeout=5)
         except serial.serialutil.SerialException:
             raise IOError('%s: No connection on port %s'%(name, which_port))
         if self.verbose: print(" done.")
@@ -78,6 +80,7 @@ class Controller:
             self._get_position()
             self._get_motor_moving()
             self._set_joystick_enable(True)
+            self._get_status_byte()
             self._moving = False
         if use_pwm:
             self.set_pwm_state('off')
@@ -320,6 +323,14 @@ class Controller:
         if self.verbose:
             print("%s: -> done setting joystick enable."%self.name)
         return self.joystick_enabled
+
+    def _get_status_byte(self):
+        if self.verbose:
+            print("%s: getting status byte"%self.name)
+        status_byte = self._send('RS '+' '.join(self.axes)) 
+        if self.verbose:
+            print("%s: -> status byte = %s"%(self.name, status_byte))
+        return status_byte
 
     def _finish_moving(self):
         if not self._moving:
