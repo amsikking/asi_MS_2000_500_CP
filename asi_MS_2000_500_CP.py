@@ -556,7 +556,7 @@ if __name__ == '__main__':
 ##    t1 = time.perf_counter()
 ##    # results:
 ##    total_time = t1 - t0
-##    print('total_time = %0.2fs'%total_time)                 # 150.26s
+##    print('total_time = %0.2fs'%total_time)                 # 150.23s
 ##    time_per_move_s = total_time / (cols * rows)
 ##    print('time_per_move_s = %0.3fs'%time_per_move_s)       # 0.391s
 ##    ms.close()
