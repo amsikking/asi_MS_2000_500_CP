@@ -530,6 +530,37 @@ if __name__ == '__main__':
     ms.move_um((0, 0, 0), relative=False)
     ms.close()
 
+##    # controller + xyz stage: time 384 'move zero' communication calls
+##    import time
+##    ms = Controller(which_port=port,
+##                    axes=('X', 'Y', 'Z'),
+##                    lead_screws=('S','S','F'),
+##                    axes_min_mm=(-60,-40,-10), # recommended to check and use!
+##                    axes_max_mm=( 60, 40, 10), # recommended to check and use!
+##                    verbose=True,
+##                    very_verbose=False)
+##    # set stage properties for max speed:
+##    ms._set_velocity(ms.max_velocity_mmps)          # max speed
+##    ms._set_acceleration(ms.min_acceleration_ms)    # fast acceration
+##    ms._set_settle_time(len(ms.axes)*(0,))          # no settle time
+##    ms._set_precision(ms.min_precision_um)          # max precision
+##    # generate move count:
+##    rows, cols = 16, 24
+##    # make calls:
+##    ms.move_um((0, 0, 0), relative=False)
+##    ms.verbose = False
+##    t0 = time.perf_counter()
+##    for move in range(cols * rows):
+##        ms.move_um((0, 0, 0), relative=False)
+##    ms.move_um((0, 0, 0), relative=False)
+##    t1 = time.perf_counter()
+##    # results:
+##    total_time = t1 - t0
+##    print('total_time = %0.2fs'%total_time)                 # 150.26s
+##    time_per_move_s = total_time / (cols * rows)
+##    print('time_per_move_s = %0.3fs'%time_per_move_s)       # 0.391s
+##    ms.close()
+##
 ##    # controller + xyz stage: tile 384 well plate
 ##    import time
 ##    ms = Controller(which_port=port,
@@ -586,5 +617,4 @@ if __name__ == '__main__':
 ##    print('total_time = %0.2fs'%total_time)                 # 368.35s
 ##    time_per_move_s = total_time / (cols * rows)
 ##    print('time_per_move_s = %0.3fs'%time_per_move_s)       # 0.959s
-##
 ##    ms.close()
